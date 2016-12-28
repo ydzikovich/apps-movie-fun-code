@@ -1,6 +1,8 @@
 package org.superbiz.moviefun;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +33,13 @@ public class DbConfig {
         dataSource.setURL(url);
         dataSource.setUser(username);
         dataSource.setPassword(password);
-        return dataSource;
+        return createConnectionPool(dataSource);
+    }
+
+    private static DataSource createConnectionPool(DataSource dataSource) {
+        HikariConfig config = new HikariConfig();
+        config.setDataSource(dataSource);
+        return new HikariDataSource(config);
     }
 
     private static LocalContainerEntityManagerFactoryBean buildEntityManagerFactoryBean(DataSource dataSource, HibernateJpaVendorAdapter jpaVendorAdapter, String unitName) {
