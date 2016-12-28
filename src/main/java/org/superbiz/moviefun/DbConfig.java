@@ -1,12 +1,15 @@
 package org.superbiz.moviefun;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
@@ -53,8 +56,14 @@ public class DbConfig {
         }
 
         @Bean
+        @Qualifier("movies")
         LocalContainerEntityManagerFactoryBean moviesEntityManagerFactoryBean(DataSource moviesDataSource, HibernateJpaVendorAdapter jpaVendorAdapter) {
             return buildEntityManagerFactoryBean(moviesDataSource, jpaVendorAdapter, "movies");
+        }
+
+        @Bean
+        PlatformTransactionManager moviesTransactionManager(@Qualifier("movies") LocalContainerEntityManagerFactoryBean factoryBean) {
+            return new JpaTransactionManager(factoryBean.getObject());
         }
     }
 
@@ -70,8 +79,14 @@ public class DbConfig {
         }
 
         @Bean
+        @Qualifier("albums")
         LocalContainerEntityManagerFactoryBean albumsEntityManagerFactoryBean(DataSource albumsDataSource, HibernateJpaVendorAdapter jpaVendorAdapter) {
             return buildEntityManagerFactoryBean(albumsDataSource, jpaVendorAdapter, "albums");
+        }
+
+        @Bean
+        PlatformTransactionManager albumsTransactionManager(@Qualifier("albums") LocalContainerEntityManagerFactoryBean factoryBean) {
+            return new JpaTransactionManager(factoryBean.getObject());
         }
     }
 }
