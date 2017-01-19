@@ -43,4 +43,9 @@ public class FileStore implements BlobStore {
             tika.detect(file)
         ));
     }
+
+    @Override
+    public void deleteAll() {
+
+    }
 }

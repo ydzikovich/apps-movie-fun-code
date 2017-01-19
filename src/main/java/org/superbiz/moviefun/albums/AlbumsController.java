@@ -73,6 +73,11 @@ public class AlbumsController {
         return new HttpEntity<>(imageBytes, headers);
     }
 
+    @DeleteMapping("/covers")
+    public String deleteCovers() {
+        blobStore.deleteAll();
+        return "redirect:/albums";
+    }
 
     private Blob buildDefaultCoverBlob() {
         ClassLoader classLoader = getClass().getClassLoader();

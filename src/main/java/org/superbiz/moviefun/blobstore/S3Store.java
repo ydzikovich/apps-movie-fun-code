@@ -4,11 +4,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.IOUtils;
 import org.apache.tika.Tika;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 public class S3Store implements BlobStore {
@@ -44,5 +46,16 @@ public class S3Store implements BlobStore {
             new ByteArrayInputStream(bytes),
             tika.detect(bytes)
         ));
+    }
+
+    @Override
+    public void deleteAll() {
+        List<S3ObjectSummary> summaries = s3
+            .listObjects(bucketName)
+            .getObjectSummaries();
+
+        for (S3ObjectSummary summary : summaries) {
+            s3.deleteObject(bucketName, summary.getKey());
+        }
     }
 }
