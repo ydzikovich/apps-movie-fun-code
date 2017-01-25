@@ -36,16 +36,17 @@ public class S3Store implements BlobStore {
             return Optional.empty();
         }
 
-        S3Object s3Object = s3.getObject(bucketName, name);
-        S3ObjectInputStream content = s3Object.getObjectContent();
+        try (S3Object s3Object = s3.getObject(bucketName, name)) {
+            S3ObjectInputStream content = s3Object.getObjectContent();
 
-        byte[] bytes = IOUtils.toByteArray(content);
+            byte[] bytes = IOUtils.toByteArray(content);
 
-        return Optional.of(new Blob(
-            name,
-            new ByteArrayInputStream(bytes),
-            tika.detect(bytes)
-        ));
+            return Optional.of(new Blob(
+                name,
+                new ByteArrayInputStream(bytes),
+                tika.detect(bytes)
+            ));
+        }
     }
 
     @Override
